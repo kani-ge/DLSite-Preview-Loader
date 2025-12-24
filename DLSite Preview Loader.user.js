@@ -2,8 +2,8 @@
 // @name        DLSite Preview Loader
 // @namespace   loli_be_free
 // @match       *://www.dlsite.com/*
-// @grant       none
-// @version     1.0
+// @grant       GM.xmlHttpRequest
+// @version     1.1
 // @description Inserts image previews into the page for restricted works on dlsite
 // @icon        https://www.dlsite.com/images/web/home/pic_not_found_01.png
 // @downloadURL https://github.com/kani-ge/DLSite-Preview-Injector/raw/master/DLSite%20Preview%20Injector.user.js
@@ -34,6 +34,14 @@ function css() {
       justify-content: center;
       margin: 0 auto;
       text-align: center;
+    }
+
+    .inject-trial {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 20px;
     }
 
     .inject-full {
@@ -83,6 +91,25 @@ async function checkExists (url) {
   return response.ok;
 }
 
+async function checkTrial (trialDiv, code, group) {
+  const trialURL = `https://trial.dlsite.com/doujin/${group}/${code}_trial.zip`;
+  GM.xmlHttpRequest({
+    method: 'HEAD',
+    url: trialURL,
+    onload: response => {
+      if (response.status == 200) {
+        const link = document.createElement('a');
+        link.classList.add('inject-trial');
+        link.appendChild(document.createTextNode('Trial Available: Download Trial'));
+        link.href = trialURL;
+        trialDiv.appendChild(link);
+      } else {
+        trialDiv.remove();
+      }
+    }
+  });
+}
+
 async function insertImages (errorBox, type, code, group) {
   css();
   const message = errorBox.querySelector('.title_text').textContent;
@@ -102,9 +129,11 @@ async function insertImages (errorBox, type, code, group) {
     <p class="title_text inject-header">
       Restricted Work: ${restrict_message}<br>Loading Preview Images
     </p>
-    <div class="inject-grid">
+    <div class="inject-trial"></div>
+    <div class="inject-grid"></div>
   `);
 
+  checkTrial(errorBox.querySelector('.inject-trial'), code, group);
   const grid = errorBox.querySelector('.inject-grid');
   var count = 0;
   var loop = true;
@@ -143,8 +172,9 @@ function displayNotFount(errorBox) {
 async function run (errorBox) {
   const releaseType = window.location.href.includes('announce') ? 'ana' : 'work';
   const code = window.location.href.match(/rj\d+/i)[0].toUpperCase();
-  const grouping = code.substring(0, 2) + ((code[2] !== "0") ? "": "0") + (Math.floor(((parseInt(code.substring(2)) / 1000) + 1))*1000).toString();
-
+  const num = parseInt(code.substring(2));
+  const groupingInc = (Math.floor(num / 1000) * 1000) == num ? 0 : 1;
+  const grouping = code.substring(0, 2) + ((code[2] !== "0") ? "": "0") + ((Math.floor(num / 1000) + groupingInc)*1000).toString();
   var exists = await checkExists( generateURL(releaseType, code, grouping));
   if (exists) {
     insertImages(errorBox, releaseType, code, grouping);
