@@ -6,8 +6,8 @@
 // @version     1.1
 // @description Inserts image previews into the page for restricted works on dlsite
 // @icon        https://www.dlsite.com/images/web/home/pic_not_found_01.png
-// @downloadURL https://github.com/kani-ge/DLSite-Preview-Injector/raw/master/DLSite%20Preview%20Injector.user.js
-// @updateURL   https://github.com/kani-ge/DLSite-Preview-Injector/raw/master/DLSite%20Preview%20Injector.user.js
+// @downloadURL https://github.com/kani-ge/DLSite-Preview-Loader/raw/master/DLSite%20Preview%20Loader.user.js
+// @updateURL   https://github.com/kani-ge/DLSite-Preview-Loader/raw/master/DLSite%20Preview%20Loader.user.js
 // @run-at      document-idle
 // ==/UserScript==
 
